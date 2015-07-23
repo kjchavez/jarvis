@@ -1,8 +1,8 @@
 """ Always On Voice Recognition Test. """
 import os
 import pyaudio
-from listener import Listener
-from srnlp import APIAI, PocketSphinx
+from jarvis.speech.listener import Listener
+from jarvis.speech.srnlp import APIAI, PocketSphinx
 
 pa = pyaudio.PyAudio()
 
