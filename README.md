@@ -7,7 +7,8 @@ A home enhancement project.
 
 ## Potentially useful libraries
 - Python interface to Google speech to text API [https://pypi.python.org/pypi/SpeechRecognition/](https://pypi.python.org/pypi/SpeechRecognition/)
-- Kaldi. Deep neural nets for speech recognition. Open source, Apache License.  
+- Kaldi. Deep neural nets for speech recognition. Open source, Apache License.
+- [CMU Sphinx / PocketSphinx](http://sourceforge.net/projects/cmusphinx/)  
 ## System Overview
 
 ### Input
@@ -44,6 +45,7 @@ Potentially useful hardware:
 Useful information:
 
 - [Raspberry Pi and real-time low latency audio](http://wiki.linuxaudio.org/wiki/raspberrypi)
+- [Multiple Microphones with PyAudio](http://stackoverflow.com/questions/25620285/recording-multiple-microphones-in-python)
 
 ###### Speech: Recognition
 Proposed interface:

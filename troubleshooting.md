@@ -1,0 +1,2 @@
+# PocketSphinx
+- If after installing both sphinxbase and pocketsphinx, you cannot successfully import pocketsphinx in python, add the paths, /path/to/python/dist-packages/pocketsphinx and /path/to/python/dist-packages/sphinxbase to your /etc/ld.so.conf file (or add a file to ld.so.conf.d directory). Note: sphinxbase and pocketsphinx may have been installed under site-packages instead of dist-packages.
