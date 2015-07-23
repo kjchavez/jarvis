@@ -1,0 +1,6 @@
+[submodule "3rdparty/api-ai-python"]
+	path = 3rdparty/api-ai-python
+	url = git@github.com:api-ai/api-ai-python.git
+[submodule "3rdparty/pocketsphinx"]
+	path = 3rdparty/pocketsphinx
+	url = git@github.com:cmusphinx/pocketsphinx.git
