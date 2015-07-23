@@ -4,3 +4,6 @@
 [submodule "3rdparty/pocketsphinx"]
 	path = 3rdparty/pocketsphinx
 	url = git@github.com:cmusphinx/pocketsphinx.git
+[submodule "3rdparty/sphinxbase"]
+	path = 3rdparty/sphinxbase
+	url = git@github.com:cmusphinx/sphinxbase.git
