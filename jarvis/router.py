@@ -8,6 +8,7 @@ from jarvis.protobuf import Manifest
 app = Flask(__name__)
 action_routes = {}
 
+
 @app.route('/')
 def index():
     return 'JARVIS router is up and running!'

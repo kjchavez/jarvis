@@ -1,17 +1,5 @@
 package jarvis;
 
-message Route {
-    required string action = 1;
-    repeated string req_parameter = 2;
-    repeated string opt_parameter = 3;
-    required string target = 4;
-}
-
-message Manifest {
-    required string appname = 1;
-    repeated Route route = 2;
-}
-
 enum DataType {
     URI = 1;
     STRING = 2;
@@ -29,3 +17,22 @@ message Intent {
     required string action = 1;
     repeated Parameter parameter = 2;
 }
+
+message Inquiry {
+    required string param = 1;
+    required string query = 2;
+}
+
+message Route {
+    required string action = 1;
+    repeated string req_parameter = 2;
+    repeated string opt_parameter = 3;
+    required string target = 4;
+}
+
+message Manifest {
+    required string appname = 1;
+    repeated Route route = 2;
+    repeated Inquiry inquiry = 3;
+}
+

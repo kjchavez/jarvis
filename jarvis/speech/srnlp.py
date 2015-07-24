@@ -4,8 +4,7 @@ import numpy as np
 import apiai
 import pyaudio
 import pocketsphinx
-from pause import PauseDetector
-
+from jarvis.speech.pause import PauseDetector
 
 class PocketSphinx:
     CHUNK = 1024
@@ -58,11 +57,11 @@ class PocketSphinx:
         stream.stop_stream()
         stream.close()
         PocketSphinx.decoder.end_utt()
-        return [seg.word for seg in PocketSphinx.decoder.seg()]
+        return " ".join([seg.word for seg in PocketSphinx.decoder.seg()])
 
 
 class APIAI:
-    CHUNK = 1024
+    CHUNK = 512
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
     RATE = 44100
@@ -120,3 +119,4 @@ class APIAI:
         response = APIAI.request.getresponse()
 
         return response.read()
+

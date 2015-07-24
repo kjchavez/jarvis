@@ -23,8 +23,12 @@ class PauseDetector(object):
 
     def process(self, data, dtype=np.int16, debug=False):
         is_pause = False
-        arr = np.fromstring(data, dtype=dtype)
-        single_rms_energy = np.sqrt(np.sum(arr * arr)/arr.size)
+        arr = np.fromstring(data, dtype=dtype).astype(float)
+        if arr.size > 0:
+            single_rms_energy = np.sqrt(np.sum(arr * arr)/arr.size)
+        else:
+            single_rms_energy = 0.0
+
         self.energies.append(single_rms_energy)
 
         if len(self.energies) < self.smoothing:
@@ -39,6 +43,9 @@ class PauseDetector(object):
             self.started = True
             return is_pause
 
+        if rms_energy > self.max_energy:
+            self.max_energy = rms_energy
+
         if rms_energy < self.rel_threshold * self.max_energy:
             self.quiet_count += 1
             if self.quiet_count > self.min_pause_length:
@@ -46,11 +53,10 @@ class PauseDetector(object):
         else:
             is_pause = False
             self.quiet_count = 0
-            if rms_energy > self.max_energy:
-                self.max_energy = rms_energy
 
         if debug:
-            print "Max Energy:", self.max_energy, "  Rel Energy:", rms_energy/self.max_energy
+            print "Max Energy:", self.max_energy,  "  Rel Energy:", rms_energy / self.max_energy
+
         return is_pause
 
     def reset(self):

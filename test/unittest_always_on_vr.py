@@ -1,8 +1,8 @@
 """ Always On Voice Recognition Test. """
 import os
 import pyaudio
-from jarvis.speech.listener import Listener
-from jarvis.speech.srnlp import APIAI, PocketSphinx
+import jarvis.speech
+from jarvis.speech.srnlp import APIAI
 
 pa = pyaudio.PyAudio()
 
@@ -12,6 +12,4 @@ def callback():
     intent = APIAI.capture_and_process(pa)
     print intent
 
-listener = Listener(pa, "jarvis", callback=callback)
-listener.start()
-pa.terminate()
+jarvis.speech.listen_for("jarvis", callback=callback)
