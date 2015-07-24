@@ -1,0 +1,11 @@
+appname: "lightapp"
+route {
+    action: "smarthome.lights_on"
+    req_parameter: "location"
+    target: "lights_on.py"
+}
+route {
+    action: "smarthome.lights_off"
+    req_parameter: "location"
+    target: "lights_off.py"
+}

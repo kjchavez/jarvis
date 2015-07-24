@@ -10,3 +10,4 @@ Implement a system that is always listening for a key phrase (i.e. Jarvis) then 
 Create first simple application of JARVIS: a single light/lamp. Must use the full system of intent filters as if it were just one of many apps installed. Actually, create two lights, so the filters must actually route the command appropriately.
 
 ## Phase 3: The Bridge
+Broadcasting, filtering, and handling "intents," much like the Android OS does. This service would happen on a local area network. What is the appropriate form of communication?

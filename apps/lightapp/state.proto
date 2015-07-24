@@ -1,0 +1,10 @@
+package state;
+
+message State {
+    repeated Light light = 1;
+}
+
+message Light {
+    required bool is_on = 1;
+    required string location = 2;
+}
