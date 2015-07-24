@@ -12,7 +12,7 @@ from collections import deque
 
 
 class PauseDetector(object):
-    def __init__(self, rel_threshold=0.15, min_pause_length=15, smoothing=4):
+    def __init__(self, rel_threshold=0.15, min_pause_length=20, smoothing=4):
         self.rel_threshold = rel_threshold
         self.min_pause_length = min_pause_length
         self.started = False
