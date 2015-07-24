@@ -52,13 +52,8 @@ if len(sys.argv) != 2:
 
 location = sys.argv[1]
 
-state_string = query('lightapp')
 state = state_pb2.State()
-light = state.light.add()
-light.is_on = True
-print state
-if state_string:
-    state.ParseFromString(query('lightapp'))
+query('lightapp', state)
 
 for light in state.light:
     if light.location == location:
