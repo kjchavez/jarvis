@@ -5,7 +5,7 @@ import jarvis.memory
 
 def get_type(data):
     raw_type = type(data)
-    if raw_type == str:
+    if raw_type in (str, unicode):
         if data[0:4] == 'URI:':
             return jarvis.protobuf.URI
         else:
@@ -15,7 +15,8 @@ def get_type(data):
     elif raw_type == float:
         return jarvis.protobuf.FLOAT
     else:
-        raise TypeError("Unknown data type.")
+        raise TypeError("Unknown data type: " + str(raw_type) + " for " +
+                str(data))
 
 
 class Intent(object):

@@ -15,12 +15,16 @@ def index():
 
 @app.route('/intent', methods=['POST'])
 def route_intent():
-    global routes
+    global action_routes
     msg = request.data
     intent = jarvis.intent.catch_intent(msg)
     best_route = find_match(intent, action_routes)
-    execute(best_route, intent)
-    response = Response("", status=200)
+    if best_route is not None:
+        execute(best_route, intent)
+        response = Response("", status=200)
+    else:
+        response = Response("No matching action route", status=501)
+
     return response
 
 
@@ -54,10 +58,12 @@ def find_match(intent, routes):
         return None
 
     intent_params = set(param.name for param in intent.parameter)
+    print "Intent Parameters:", intent_params
     candidates = routes[intent.action]
     for route in candidates:
         for param_name in route.req_parameter:
             if param_name not in intent_params:
+                print param_name, "not found."
                 break
         else:
             best_candidate = route

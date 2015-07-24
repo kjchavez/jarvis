@@ -28,7 +28,7 @@ class PocketSphinx:
         PocketSphinx.pause_detector.reset()
 
     @staticmethod
-    def capture_and_process(pa):
+    def capture_and_process(pa, timeout=None):
         PocketSphinx.reset()
         PocketSphinx.decoder.start_utt()
         stream = pa.open(format=PocketSphinx.FORMAT,
@@ -38,7 +38,12 @@ class PocketSphinx:
                          output=False,
                          frames_per_buffer=PocketSphinx.CHUNK)
 
+        start_time = time.time()
         while True:
+            if timeout is not None:
+                if time.time() - start_time() > timeout:
+                    break
+
             buf = stream.read(PocketSphinx.CHUNK)
 
             # Check if utterance is over
@@ -57,7 +62,7 @@ class PocketSphinx:
 
 
 class APIAI:
-    CHUNK = 512
+    CHUNK = 1024
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
     RATE = 44100
@@ -85,7 +90,7 @@ class APIAI:
         APIAI.request = APIAI.ai.voice_request()
 
     @staticmethod
-    def capture_and_process(pa):
+    def capture_and_process(pa, timeout=None):
         # Using API.ai
         APIAI.reset()
         stream = pa.open(format=APIAI.FORMAT,
@@ -97,15 +102,18 @@ class APIAI:
                          stream_callback=APIAI.callback)
 
         stream.start_stream()
+        start_time = time.time()
         try:
             while stream.is_active():
+                if timeout is not None:
+                    if time.time() - start_time > timeout:
+                        break
                 time.sleep(0.1)
         except Exception:
             raise e
         except KeyboardInterrupt:
             pass
 
-        stream.stop_stream()
         stream.close()
 
         print ("Wait for response...")
