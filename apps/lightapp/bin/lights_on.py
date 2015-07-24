@@ -1,29 +1,11 @@
 #!/usr/bin/env python
 import sys
+import argparse
 import state_pb2
 from jarvis.state.client import query, update
 import jarvis.speech.synthesis as synthesis
 
 """
-Example intent:
-{
-  "id": "7ff9c35a-3dd5-4eba-a811-0eaaf5319edd",
-  "timestamp": "2015-07-23T15:41:36.722Z",
-  "result": {
-    "source": "domains",
-    "resolvedQuery": "jarvis turn on the lights",
-    "action": "smarthome.lights_on",
-    "metadata": {},
-    "fulfillment": {
-      "speech": ""
-    }
-  },
-  "status": {
-    "code": 200,
-    "errorType": "success"
-  }
-}
-
 {
   "id": "da26c75a-3489-4ee3-bea8-ce60c83e2fc7",
   "timestamp": "2015-07-23T19:50:26.33Z",
@@ -45,21 +27,18 @@ Example intent:
   }
 }
 """
-
-if len(sys.argv) != 2:
-    print "Usage: lights_on.py <location>"
-    sys.exit(1)
-
-location = sys.argv[1]
+parser = argparse.ArgumentParser()
+parser.add_argument('--location', type=str, required=True)
+args = parser.parse_args()
 
 state = state_pb2.State()
 query('lightapp', state)
 
 for light in state.light:
-    if light.location == location:
+    if light.location == args.location:
         light.is_on = True
         update('lightapp', state)
-        synthesis.say("Turned on %s light" % location)
+        synthesis.say("Turned on %s light" % args.location)
         break
 else:
-    synthesis.say("Couldn't find light in %s" % location)
+    synthesis.say("Couldn't find light in %s" % args.location)

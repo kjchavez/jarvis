@@ -1,23 +1,22 @@
 #!/usr/bin/env python
-import sys
+
+import argparse
 import state_pb2
 from jarvis.state.client import query, update
 import jarvis.speech.synthesis as synthesis
 
-if len(sys.argv) != 2:
-    print "Usage: lights_off.py <location>"
-    sys.exit(1)
-
-location = sys.argv[1]
+parser = argparse.ArgumentParser()
+parser.add_argument('--location', type=str, required=True)
+args = parser.parse_args()
 
 state = state_pb2.State()
 query('lightapp', state)
 
 for light in state.light:
-    if light.location == location:
+    if light.location == args.location:
         light.is_on = True
         update('lightapp', state)
-        synthesis.say("Turned on %s light" % location)
+        synthesis.say("Turned on %s light" % args.location)
         break
 else:
-    synthesis.say("Couldn't find light in %s" % location)
+    synthesis.say("Couldn't find light in %s" % args.location)

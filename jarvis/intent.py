@@ -46,6 +46,14 @@ class Intent(object):
 
         return params
 
+    @staticmethod
+    def from_string(string):
+        intent_msg = jarvis.protobuf.Intent()
+        intent_msg.ParseFromString(string)
+        intent = Intent("")
+        intent.message = intent_msg
+        return intent
+
 
 def fire_intent(intent, driver='127.0.0.1:5500'):
     """ Hit a particular endpoint with the intent. """

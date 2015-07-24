@@ -11,6 +11,8 @@ params = intent.get_params()
 assert(params['location'] == 'kitchen')
 assert(params['person'] == jarvis.memory.fetch_uri('URI:person/kjchavez'))
 
+intent = Intent('smarthome.lights_on',
+                location='living room')
 try:
     fire_intent(intent)
 except URLError:

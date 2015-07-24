@@ -1,8 +1,12 @@
+import os
+import subprocess
 from flask import Flask, Response, request
+import google.protobuf.text_format
 import jarvis.intent
+from jarvis.protobuf import Manifest
 
 app = Flask(__name__)
-
+action_routes = {}
 
 @app.route('/')
 def index():
@@ -11,11 +15,67 @@ def index():
 
 @app.route('/intent', methods=['POST'])
 def route_intent():
+    global routes
     msg = request.data
     intent = jarvis.intent.catch_intent(msg)
-    print intent
+    best_route = find_match(intent, action_routes)
+    execute(best_route, intent)
     response = Response("", status=200)
     return response
 
+
+def load_app_manifest(app_dir, global_routes):
+    manifest = Manifest()
+    with open(os.path.join(app_dir, 'manifest.prototxt')) as fp:
+        google.protobuf.text_format.Merge(fp.read(), manifest)
+
+    for route in manifest.route:
+        # Specify full path to executables
+        path = os.path.join(jarvis.APPS_DIR, manifest.appname)
+        prog = os.path.join(path, os.path.join('bin', route.target))
+        route.target = prog
+        if route.action not in global_routes:
+            global_routes[route.action] = []
+
+        global_routes[route.action].append(route)
+
+
+def load_routes():
+    global_routes = {}
+    for app in os.listdir(jarvis.APPS_DIR):
+        load_app_manifest(os.path.join(jarvis.APPS_DIR, app), global_routes)
+
+    return global_routes
+
+
+def find_match(intent, routes):
+    best_candidate = None
+    if intent.action not in routes:
+        return None
+
+    intent_params = set(param.name for param in intent.parameter)
+    candidates = routes[intent.action]
+    for route in candidates:
+        for param_name in route.req_parameter:
+            if param_name not in intent_params:
+                break
+        else:
+            best_candidate = route
+
+    return best_candidate
+
+
+def execute(route, intent):
+    """ Executes the action specified by the route, with given intent."""
+    args = [route.target]
+    for param in intent.parameter:
+        args.append("--%s" % param.name)
+        args.append(r"%s" % str(param.data))
+
+    subprocess.Popen(args)
+
 if __name__ == '__main__':
+    # Load inverted index of actions to routes
+    action_routes = load_routes()
+    print action_routes
     app.run(debug=True, port=5500)
