@@ -1,10 +1,12 @@
 import os
+import time
 import subprocess
 import pyaudio
 import atexit
 import json
 import pocketsphinx as ps
 import apiai
+
 from jarvis.speech import PauseDetector
 from jarvis.intent import *
 import jarvis.sayings
@@ -113,6 +115,7 @@ class KeyphraseListener(AudioProcessor):
 class AudioInputStream:
     IDLE = 0
     LISTENING = 1
+    PROCESSING = 2
     _audio = pyaudio.PyAudio()
     CHUNK = 1024
     FORMAT = pyaudio.paInt16
@@ -129,6 +132,23 @@ class AudioInputStream:
                      input=True,
                      start=False,
                      stream_callback=self.process_audio)
+
+    def process_audio(self, in_data, frame_count, time_info, status):
+        raise NotImplementedError("Override this")
+
+    def start(self):
+        self.stream.start_stream()
+
+    def stop(self):
+        self.stream.stop_stream()
+
+    def __del__(self):
+        self.stream.close()
+
+
+class ActiveAudioInputStream(AudioInputStream):
+    def __init__(self):
+        AudioInputStream.__init__(self)
 
         self.idle_processor = KeyphraseListener(self, "jarvis", 1e-30)
         self.listening_processor = APIaiProcessor(self)
@@ -154,8 +174,12 @@ class AudioInputStream:
                               status)
 
             if done:
-                self.state = AudioInputStream.IDLE
+                self.state = AudioInputStream.PROCESSING
                 utt, reply, intent = self.listening_processor.interpret()
+                self.latest_utt = utt
+                self.state = AudioInputStream.IDLE
+
+                # Then we trigger actions
                 print "Jarvis IN << %s" % utt
                 print "Jarvis OUT >> %s" % reply
                 if reply:
@@ -168,19 +192,41 @@ class AudioInputStream:
 
         return in_data, pyaudio.paContinue
 
-    def start(self):
-        self.stream.start_stream()
 
-    def stop(self):
-        self.stream.stop_stream()
+class PassiveAudioInputStream(AudioInputStream):
+    def __init__(self):
+        AudioInputStream.__init__(self)
 
-    def __del__(self):
-        self.stream.close()
+        self.listening_processor = APIaiProcessor(self)
+        self.latest_utt = ""
 
+    def process_audio(self, in_data, frame_count, time_info, status):
+        if self.state == AudioInputStream.IDLE:
+            pass
 
-@atexit.register
-def terminate():
-    AudioInputStream._audio.terminate()
+        elif self.state == AudioInputStream.LISTENING:
+            done = self.listening_processor.process(
+                              in_data,
+                              frame_count,
+                              time_info,
+                              status)
+
+            if done:
+                self.state = AudioInputStream.PROCESSING
+                utt, reply, intent = self.listening_processor.interpret()
+                self.latest_utt = utt
+                self.state = AudioInputStream.IDLE
+
+        return in_data, pyaudio.paContinue
+
+    def get_latest_utterance(self):
+        while self.state != AudioInputStream.IDLE:
+            time.sleep(0.1)
+
+        return self.latest_utt
+
+    def start_listening(self):
+        self.state = AudioInputStream.LISTENING
 
 
 class AudioOutputStream:
@@ -193,12 +239,14 @@ class AudioOutputStream:
     def __del__(self):
         pass
 
+
 def say(message, stream_idx=0):
     """ Global access point to jarvis speech output. """
     if len(jarvis.audio_out) > stream_idx:
         jarvis.audio_out[stream_idx].say(message)
     else:
         print "[OUTPUT %d]: %s" % (stream_idx, message)
+
 
 def capture(stream_idx=0):
     """Listen to input stream for next utterance. """
