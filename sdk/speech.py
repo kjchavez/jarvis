@@ -1,13 +1,12 @@
 import sdk
 import socket
+import subprocess
 
 def say(message, stream_idx=0):
     """ Global access point to jarvis speech output. """
-    if len(jarvis.audio_out) > stream_idx:
-        jarvis.audio_out[stream_idx].say(message)
-    else:
-        print "[OUTPUT %d]: %s" % (stream_idx, message)
-
+    location = sdk.config.audio_output[stream_idx].name
+    print "[%s]: %s" %  (location, message)
+    subprocess.call(['espeak', message])
 
 def capture(stream_idx=0):
     """Listen to input stream for next utterance. """

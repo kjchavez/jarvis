@@ -10,6 +10,7 @@ import apiai
 # from pause import PauseDetector
 from jarvis.intent import *
 import jarvis.sayings
+import sdk.speech
 
 def initialize():
     """Initialize Jarvis' audio I/O module.
@@ -183,12 +184,12 @@ class ActiveAudioInputStream(AudioInputStream):
                 print "Jarvis IN << %s" % utt
                 print "Jarvis OUT >> %s" % reply
                 if reply:
-                    say(reply)
+                    sdk.speech.say(reply)
 
                 if intent:
                     success = fire_intent(intent)
                     if not success:
-                        say(jarvis.sayings.intent_failed())
+                        sdk.speech.say(jarvis.sayings.intent_failed())
 
         return in_data, pyaudio.paContinue
 
