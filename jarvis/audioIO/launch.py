@@ -1,5 +1,5 @@
 import SocketServer
-from jarvis.audio import *
+from audio import *
 
 audio_in = PassiveAudioInputStream()
 audio_in2 = ActiveAudioInputStream()

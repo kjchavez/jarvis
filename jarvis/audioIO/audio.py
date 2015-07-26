@@ -7,7 +7,7 @@ import json
 import pocketsphinx as ps
 import apiai
 
-from jarvis.speech import PauseDetector
+# from pause import PauseDetector
 from jarvis.intent import *
 import jarvis.sayings
 
