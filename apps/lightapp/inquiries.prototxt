@@ -1,5 +1,0 @@
-appname: "lightapp"
-inquiry {
-    param: "location"
-    query: "Which lights?"
-}

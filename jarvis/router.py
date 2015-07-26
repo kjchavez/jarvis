@@ -2,6 +2,8 @@ import os
 import subprocess
 from flask import Flask, Response, request
 import google.protobuf.text_format
+
+import jarvis.inquiry
 import jarvis.intent
 from jarvis.protobuf import Manifest
 
@@ -22,9 +24,9 @@ def route_intent():
     best_route = find_match(intent, action_routes)
     if best_route is not None:
         execute(best_route, intent)
-        response = Response("", status=200)
+        response = Response("OK", status=200)
     else:
-        response = Response("No matching action route", status=501)
+        response = Response("NO ROUTE", status=501)
 
     return response
 
@@ -84,5 +86,6 @@ def execute(route, intent):
 if __name__ == '__main__':
     # Load inverted index of actions to routes
     action_routes = load_routes()
+    jarvis.inquiry.initialize()
     print action_routes
     app.run(debug=True, port=5500)

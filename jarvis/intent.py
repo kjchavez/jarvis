@@ -29,7 +29,7 @@ class Intent(object):
     def add_parameter(self, name, data):
         param = self.message.parameter.add()
         param.name = name
-        param.data = data
+        param.data = repr(data)
         param.type = get_type(data)
 
     def serialize(self):
@@ -57,21 +57,37 @@ class Intent(object):
 
 
 def fire_intent(intent, driver='127.0.0.1:5500'):
-    """ Hit a particular endpoint with the intent. """
+    """ Hit a particular endpoint with the intent. 
+    
+    Returns:
+        boolean indicating whether or not intent was successfully
+        handled.
+    """
     message = intent.serialize()
+
     try:
         request = urllib2.Request(
                       'http://%s/intent' % driver,
                       headers={'Content-Type': 'application/jarvis'},
                       data=message)
         response = urllib2.urlopen(request).read()
-        print response
+        return True
+
+    except urllib2.HTTPError as e:
+        if e.code == 501:
+            return False
+
     except urllib2.URLError as e:
-        print e.message
-        raise
+        return False
+
 
 
 def catch_intent(message):
     intent = jarvis.protobuf.Intent()
     intent.ParseFromString(message)
     return intent
+
+
+# A few utilities for common intents
+def speak_intent(message):
+    return Intent('jarvis.say', message=message)

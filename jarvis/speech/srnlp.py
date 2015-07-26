@@ -1,5 +1,6 @@
 import os
 import time
+import json
 import numpy as np
 import apiai
 import pyaudio
@@ -7,7 +8,7 @@ import pocketsphinx
 from jarvis.speech.pause import PauseDetector
 
 class PocketSphinx:
-    CHUNK = 1024
+    CHUNK = 512
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
     RATE = 16000
@@ -17,7 +18,7 @@ class PocketSphinx:
     config.set_string('-lm', os.path.join(MODELDIR, 'en-us/en-us.lm.bin'))
     config.set_string('-dict', os.path.join(MODELDIR, 'en-us/cmudict-en-us.dict'))
     decoder = pocketsphinx.Decoder(config)
-    pause_detector = PauseDetector()
+    pause_detector = PauseDetector(rel_threshold=0.3, min_pause_length=8)
 
     # Decode streaming data.
     decoder = pocketsphinx.Decoder(config)
@@ -46,7 +47,7 @@ class PocketSphinx:
             buf = stream.read(PocketSphinx.CHUNK)
 
             # Check if utterance is over
-            is_pause = PocketSphinx.pause_detector.process(buf, dtype=np.int16)
+            is_pause = PocketSphinx.pause_detector.process(buf, dtype=np.int16, debug=True)
             if is_pause:
                 print "Detected pause"
                 break
@@ -57,7 +58,8 @@ class PocketSphinx:
         stream.stop_stream()
         stream.close()
         PocketSphinx.decoder.end_utt()
-        return " ".join([seg.word for seg in PocketSphinx.decoder.seg()])
+        words = [seg.word for seg in PocketSphinx.decoder.seg() if seg.word[0] != '<' ]
+        return " ".join(words)
 
 
 class APIAI:
@@ -75,7 +77,7 @@ class APIAI:
     @staticmethod
     def callback(in_data, frame_count, time_info, status):
         frames, data = APIAI.resampler.resample(in_data, frame_count)
-        is_pause = APIAI.pause_detector.process(data, dtype=np.int16)
+        is_pause = APIAI.pause_detector.process(data, dtype=np.int16, debug=True)
         APIAI.request.send(data)
 
         if not is_pause:
@@ -118,5 +120,5 @@ class APIAI:
         print ("Wait for response...")
         response = APIAI.request.getresponse()
 
-        return response.read()
+        return json.loads(response.read())
 
