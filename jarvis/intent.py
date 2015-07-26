@@ -1,6 +1,6 @@
 import urllib2
 import jarvis.protobuf
-import jarvis.memory
+import sdk.memory
 
 
 def get_type(data):
@@ -43,7 +43,7 @@ class Intent(object):
                 params[param.name] = param.data
             else:
                 # Fetch resource from URI
-                params[param.name] = jarvis.memory.fetch_uri(param.data)
+                params[param.name] = sdk.memory.fetch_uri(param.data)
 
         return params
 

@@ -240,22 +240,6 @@ class AudioOutputStream:
         pass
 
 
-def say(message, stream_idx=0):
-    """ Global access point to jarvis speech output. """
-    if len(jarvis.audio_out) > stream_idx:
-        jarvis.audio_out[stream_idx].say(message)
-    else:
-        print "[OUTPUT %d]: %s" % (stream_idx, message)
-
-
-def capture(stream_idx=0):
-    """Listen to input stream for next utterance. """
-    stream = jarvis.audio_in[stream_idx]
-    while stream.state != AudioInputStream.IDLE:
-        time.sleep(0.05)
-
-
-
 if __name__ == "__main__":
     import time
     initialize()
