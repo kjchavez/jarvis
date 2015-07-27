@@ -19,5 +19,5 @@ def load(appname, state):
     return False
 
 def update(appname, new_state):
-    msg_str = state.SerializeToString()
+    msg_str = new_state.SerializeToString()
     r.set(appname, msg_str)
