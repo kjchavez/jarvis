@@ -1,4 +1,12 @@
 venv
+
+# Generated files
 *.pyc
 *.rdb
+
+# Log data, other info directories
 dev-log/
+logs/
+
+# Scratchwork
+sandbox/

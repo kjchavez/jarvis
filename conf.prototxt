@@ -1,0 +1,21 @@
+app_dir: "/home/kevin/Code/jarvis/apps"
+
+memory: {
+    host: "127.0.0.1"
+    port: 6380
+}
+
+state: {
+    host: "127.0.0.1"
+    port: 6381
+}
+
+audio_input {
+    host: "127.0.0.1"
+    port: 9999
+    name: "kitchen"
+}
+
+audio_output {
+    name: "LAPTOP"
+}
