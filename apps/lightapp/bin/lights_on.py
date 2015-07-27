@@ -2,43 +2,29 @@
 import sys
 import argparse
 import state_pb2
-from jarvis.state.client import query, update
-import jarvis.speech.synthesis as synthesis
+import sdk.speech
+import sdk.state
 
-"""
-{
-  "id": "da26c75a-3489-4ee3-bea8-ce60c83e2fc7",
-  "timestamp": "2015-07-23T19:50:26.33Z",
-  "result": {
-    "source": "domains",
-    "resolvedQuery": "turn on the kitchen lights",
-    "action": "smarthome.lights_on",
-    "parameters": {
-      "location": "kitchen"
-    },
-    "metadata": {},
-    "fulfillment": {
-      "speech": ""
-    }
-  },
-  "status": {
-    "code": 200,
-    "errorType": "success"
-  }
-}
-"""
 parser = argparse.ArgumentParser()
-parser.add_argument('--location', type=str, required=True)
+parser.add_argument('--location', type=str)
 args = parser.parse_args()
 
 state = state_pb2.State()
-query('lightapp', state)
+sdk.state.load('lightapp', state)
+
+if not args.location:
+    resolved_location = sdk.speech.inquire('location', query="Which lights?")
+    if resolved_location is None:
+        sdk.speech.say("I don't know which lights to turn on.")
+        sys.exit(0)
+    else:
+        args.location = resolved_location
 
 for light in state.light:
     if light.location == args.location:
         light.is_on = True
-        update('lightapp', state)
-        synthesis.say("Turned on %s light" % args.location)
+        sdk.state.update('lightapp', state)
+        sdk.speech.say("Turned on %s light" % args.location)
         break
 else:
-    synthesis.say("Couldn't find light in %s" % args.location)
+    sdk.speech.say("Couldn't find light in %s" % args.location)

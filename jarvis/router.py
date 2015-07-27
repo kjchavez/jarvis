@@ -3,7 +3,6 @@ import subprocess
 from flask import Flask, Response, request
 import google.protobuf.text_format
 
-import jarvis.inquiry
 import jarvis.intent
 from jarvis.protobuf import Manifest
 
@@ -38,8 +37,7 @@ def load_app_manifest(app_dir, global_routes):
 
     for route in manifest.route:
         # Specify full path to executables
-        path = os.path.join(jarvis.APPS_DIR, manifest.appname)
-        prog = os.path.join(path, os.path.join('bin', route.target))
+        prog = os.path.join(app_dir, os.path.join('bin', route.target))
         route.target = prog
         if route.action not in global_routes:
             global_routes[route.action] = []
@@ -49,8 +47,9 @@ def load_app_manifest(app_dir, global_routes):
 
 def load_routes():
     global_routes = {}
-    for app in os.listdir(jarvis.APPS_DIR):
-        load_app_manifest(os.path.join(jarvis.APPS_DIR, app), global_routes)
+    root = os.path.join(os.environ['JARVIS_ROOT'], 'apps')
+    for app in os.listdir(root):
+        load_app_manifest(os.path.join(root, app), global_routes)
 
     return global_routes
 
@@ -86,6 +85,5 @@ def execute(route, intent):
 if __name__ == '__main__':
     # Load inverted index of actions to routes
     action_routes = load_routes()
-    jarvis.inquiry.initialize()
     print action_routes
     app.run(debug=True, port=5500)

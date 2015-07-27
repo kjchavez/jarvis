@@ -11,7 +11,8 @@ message Server {
     required int32 port = 2;
 } 
 
-message Jarvis {
+message JarvisConf {
+    required string root_dir = 6;
     required string app_dir = 1;
     required Server memory = 2;
     required Server state = 3;

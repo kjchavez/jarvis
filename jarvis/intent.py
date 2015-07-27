@@ -6,7 +6,7 @@ import sdk.memory
 def get_type(data):
     raw_type = type(data)
     if raw_type in (str, unicode):
-        if data[0:4] == 'URI:':
+        if data[0:4] == 'uri:':
             return jarvis.protobuf.URI
         else:
             return jarvis.protobuf.STRING
@@ -29,7 +29,7 @@ class Intent(object):
     def add_parameter(self, name, data):
         param = self.message.parameter.add()
         param.name = name
-        param.data = repr(data)
+        param.data = str(data)
         param.type = get_type(data)
 
     def serialize(self):
