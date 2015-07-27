@@ -18,11 +18,6 @@ message Intent {
     repeated Parameter parameter = 2;
 }
 
-message Inquiry {
-    required string param = 1;
-    required string query = 2;
-}
-
 message Route {
     required string action = 1;
     repeated string req_parameter = 2;
@@ -33,6 +28,5 @@ message Route {
 message Manifest {
     required string appname = 1;
     repeated Route route = 2;
-    repeated Inquiry inquiry = 3;
 }
 
