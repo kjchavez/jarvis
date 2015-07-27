@@ -1,11 +1,18 @@
 import redis
-import jarvis
+import sdk
 
-redis_instance = redis.StrictRedis(host=jarvis.MEMORY_HOST, port=jarvis.MEMORY_PORT, db=0)
+host = sdk.config.memory.host
+port = sdk.config.memory.port
+redis_instance = redis.StrictRedis(host=host, port=port, db=0)
 
 
 def fetch_uri(uri):
-    return "MemoryError: Jarvis Memory not implemented"
+    if uri[0:4] == 'uri:':
+        data = redis_instance.get(uri)
+    else:
+        data = None
+
+    return data
 
 
 def read(key):

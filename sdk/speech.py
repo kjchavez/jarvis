@@ -23,3 +23,14 @@ def capture(stream_idx=0):
         sock.close()
 
     return received
+
+def inquire(parameter, query=None):
+    if not query:
+        query = sdk.query.get_query_for(parameter)
+
+    if '<param>' in query:
+        query.replace('<param>', parameter)
+
+    say(query)
+    value = capture()
+    return value
