@@ -3,6 +3,7 @@ venv
 # Generated files
 *.pyc
 *.rdb
+*_pb2.py
 
 # Log data, other info directories
 dev-log/
