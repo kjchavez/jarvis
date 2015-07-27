@@ -4,6 +4,8 @@ wiki/
 # Generated files
 *.pyc
 *.rdb
+apps/*/*_pb2.py
+apps/*/bin/*_pb2.py
 
 # Log data, other info directories
 dev-log/
