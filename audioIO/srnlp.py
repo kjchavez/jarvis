@@ -5,7 +5,7 @@ import numpy as np
 import apiai
 import pyaudio
 import pocketsphinx
-from jarvis.audioIO.pause import PauseDetector
+from audioIO.pause import PauseDetector
 
 class PocketSphinx:
     CHUNK = 512

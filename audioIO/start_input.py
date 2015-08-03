@@ -1,12 +1,13 @@
 import argparse
 import SocketServer
-from audio import *
+import audio
+
 
 # Audio stream ready to respond to requests
-passive_audio_in = PassiveAudioInputStream()
+passive_audio_in = audio.PassiveAudioInputStream()
 
 # Audio stream listening for key-phrase
-active_audio_in = ActiveAudioInputStream()
+active_audio_in = audio.ActiveAudioInputStream()
 
 
 class RequestHandler(SocketServer.BaseRequestHandler):

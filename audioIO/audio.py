@@ -8,8 +8,8 @@ import pocketsphinx as ps
 import apiai
 
 # from pause import PauseDetector
-from jarvis.intent import *
-import jarvis.sayings
+from common.intent import *
+import common.sayings
 import sdk.speech
 
 def initialize():
@@ -189,7 +189,7 @@ class ActiveAudioInputStream(AudioInputStream):
                 if intent:
                     success = fire_intent(intent)
                     if not success:
-                        sdk.speech.say(jarvis.sayings.intent_failed())
+                        sdk.speech.say(common.sayings.intent_failed())
 
         return in_data, pyaudio.paContinue
 
