@@ -1,19 +1,18 @@
 import urllib2
-import jarvis.protobuf
-import sdk.memory
+import common.protobuf
 
 
 def get_type(data):
     raw_type = type(data)
     if raw_type in (str, unicode):
         if data[0:4] == 'uri:':
-            return jarvis.protobuf.URI
+            return common.protobuf.URI
         else:
-            return jarvis.protobuf.STRING
+            return common.protobuf.STRING
     elif raw_type == int:
-        return jarvis.protobuf.INT
+        return common.protobuf.INT
     elif raw_type == float:
-        return jarvis.protobuf.FLOAT
+        return common.protobuf.FLOAT
     else:
         raise TypeError("Unknown data type: " + str(raw_type) + " for " +
                 str(data))
@@ -21,7 +20,7 @@ def get_type(data):
 
 class Intent(object):
     def __init__(self, action, **params):
-        self.message = jarvis.protobuf.Intent()
+        self.message = common.protobuf.Intent()
         self.message.action = action
         for name, data in params.items():
             self.add_parameter(name, data)
@@ -35,21 +34,9 @@ class Intent(object):
     def serialize(self):
         return self.message.SerializeToString()
 
-    def get_params(self):
-        """ Returns a dictionary of param names to data. """
-        params = {}
-        for param in self.message.parameter:
-            if param.type != jarvis.protobuf.URI:
-                params[param.name] = param.data
-            else:
-                # Fetch resource from URI
-                params[param.name] = sdk.memory.fetch_uri(param.data)
-
-        return params
-
     @staticmethod
     def from_string(string):
-        intent_msg = jarvis.protobuf.Intent()
+        intent_msg = common.protobuf.Intent()
         intent_msg.ParseFromString(string)
         intent = Intent("")
         intent.message = intent_msg
@@ -83,7 +70,7 @@ def fire_intent(intent, driver='127.0.0.1:5500'):
 
 
 def catch_intent(message):
-    intent = jarvis.protobuf.Intent()
+    intent = common.protobuf.Intent()
     intent.ParseFromString(message)
     return intent
 
