@@ -1,5 +1,5 @@
 # Initialize Jarvis state
-redis-server $JARVIS_ROOT/conf/state.conf
+redis-server $JARVIS_ROOT/config/state.conf
 for D in $JARVIS_ROOT/apps/*; do
     if [ -d "${D}" ]; then
         python ${D}/setup.py
@@ -7,7 +7,7 @@ for D in $JARVIS_ROOT/apps/*; do
 done
 
 # And Jarvis memory
-redis-server $JARVIS_ROOT/conf/memory.conf
+redis-server $JARVIS_ROOT/config/memory.conf
 
 # Finally start the action router
 python -m jarvis.router
