@@ -3,8 +3,8 @@ import subprocess
 from flask import Flask, Response, request
 import google.protobuf.text_format
 
-import jarvis.intent
-from jarvis.protobuf import Manifest
+import common.intent
+from common.protobuf import Manifest
 
 app = Flask(__name__)
 action_routes = {}
@@ -19,7 +19,7 @@ def index():
 def route_intent():
     global action_routes
     msg = request.data
-    intent = jarvis.intent.catch_intent(msg)
+    intent = common.intent.catch_intent(msg)
     best_route = find_match(intent, action_routes)
     if best_route is not None:
         execute(best_route, intent)
