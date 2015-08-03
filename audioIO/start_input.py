@@ -19,8 +19,10 @@ class RequestHandler(SocketServer.BaseRequestHandler):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--host", '-h', default='127.0.0.1')
-    parser.add_argument("--port", '-p', type=int, default=9999)
+    parser.add_argument("--host", default='127.0.0.1')
+    parser.add_argument("--port", type=int, default=9999)
+
+    args = parser.parse_args()
 
     # Create the server, binding to localhost on port 9999
     server = SocketServer.TCPServer((args.host, args.port), RequestHandler)
