@@ -2,10 +2,10 @@ appname: "lightapp"
 route {
     action: "smarthome.lights_on"
     opt_parameter: "location"
-    target: "lights_on.py"
+    target: "lights_on"
 }
 route {
     action: "smarthome.lights_off"
     opt_parameter: "location"
-    target: "lights_off.py"
+    target: "lights_off"
 }

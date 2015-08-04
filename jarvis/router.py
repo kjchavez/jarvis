@@ -1,13 +1,24 @@
 import os
 import subprocess
+import importlib
 from flask import Flask, Response, request
 import google.protobuf.text_format
 
 import common.intent
 from common.protobuf import Manifest
 
+
 app = Flask(__name__)
 action_routes = {}
+
+
+class ActionRoute:
+    def __init__(self, route, function):
+        self.route = route
+        self.function = function
+
+    def execute(self, args):
+        self.function(**args)
 
 
 @app.route('/')
@@ -31,25 +42,30 @@ def route_intent():
 
 
 def load_app_manifest(app_dir, global_routes):
+    # Import the app module
+    module = importlib.import_module('apps.%s' % app_dir)
+
+    root = os.path.join(os.environ['JARVIS_ROOT'], 'apps')
+    full_path = os.path.join(root, app_dir)
+
     manifest = Manifest()
-    with open(os.path.join(app_dir, 'manifest.prototxt')) as fp:
+    with open(os.path.join(full_path, 'manifest.prototxt')) as fp:
         google.protobuf.text_format.Merge(fp.read(), manifest)
 
     for route in manifest.route:
-        # Specify full path to executables
-        prog = os.path.join(app_dir, os.path.join('bin', route.target))
-        route.target = prog
+        function = module.__dict__[route.target]
         if route.action not in global_routes:
             global_routes[route.action] = []
 
-        global_routes[route.action].append(route)
+        global_routes[route.action].append(ActionRoute(route, function))
 
 
 def load_routes():
     global_routes = {}
     root = os.path.join(os.environ['JARVIS_ROOT'], 'apps')
     for app in os.listdir(root):
-        load_app_manifest(os.path.join(root, app), global_routes)
+        if os.path.isdir(os.path.join(root, app)):
+            load_app_manifest(app, global_routes)
 
     return global_routes
 
@@ -62,25 +78,25 @@ def find_match(intent, routes):
     intent_params = set(param.name for param in intent.parameter)
     print "Intent Parameters:", intent_params
     candidates = routes[intent.action]
-    for route in candidates:
-        for param_name in route.req_parameter:
+    for action_route in candidates:
+        for param_name in action_route.route.req_parameter:
             if param_name not in intent_params:
                 print param_name, "not found."
                 break
         else:
-            best_candidate = route
+            best_candidate = action_route
 
     return best_candidate
 
 
 def execute(route, intent):
     """ Executes the action specified by the route, with given intent."""
-    args = [route.target]
+    args = {}
+    # [route.target]
     for param in intent.parameter:
-        args.append("--%s" % param.name)
-        args.append(r"%s" % str(param.data))
+        args[param.name] = param.data
 
-    subprocess.Popen(args)
+    route.execute(args)
 
 if __name__ == '__main__':
     # Load inverted index of actions to routes
