@@ -1,6 +1,6 @@
 import argparse
 import SocketServer
-import audio
+from audioIO import audio
 
 
 # Audio stream ready to respond to requests
@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # Create the server, binding to localhost on port 9999
+    # Create the server
     server = SocketServer.TCPServer((args.host, args.port), RequestHandler)
     passive_audio_in.start()
     active_audio_in.start()
